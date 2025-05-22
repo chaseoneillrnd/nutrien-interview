@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Histogram API v1 - Swagger UI</title>
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css" />
+  <style>
+    html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+    *, *:before, *:after { box-sizing: inherit; }
+    body { margin: 0; background: #fafafa; }
+    #swagger-json-container { display: none; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <div id="swagger-json-container">
+    <!-- This will be populated with the Swagger JSON -->
+  </div>
+  <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"></script>
+  <script>
+    // This is the Swagger JSON copied from the API
+    const swaggerJson = {
+      "openapi": "3.0.0",
+      "info": {
+        "title": "Histogram API",
+        "version": "1.0.0",
+        "description": "API for generating histograms from CSV data.",
+        "contact": {
+          "name": "API Support",
+          "email": "support@example.com"
+        }
+      },
+      "servers": [
+        {
+          "url": "https://9islkthdfd.execute-api.us-east-1.amazonaws.com/dev/api/v1",
+          "description": "Versioned API v1 (Recommended)"
+        },
+        {
+          "url": "https://9islkthdfd.execute-api.us-east-1.amazonaws.com/dev",
+          "description": "Direct routes (for backward compatibility)"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Histogram",
+          "description": "Histogram operations"
+        }
+      ],
+      "components": {
+        "schemas": {
+          "ColumnsList": {
+            "type": "object",
+            "properties": {
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of column names available in the CSV data"
+              }
+            }
+          },
+          "Histogram": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Histogram data with values as keys and counts as values"
+          },
+          "Error": {
+            "type": "object",
+            "properties": {
+              "error": {
+                "type": "string",
+                "description": "Error message"
+              }
+            }
+          }
+        }
+      },
+      "paths": {
+        "/columns": {
+          "get": {
+            "tags": ["Histogram"],
+            "summary": "Get all available columns",
+            "description": "Returns a list of all column names available in the CSV data",
+            "operationId": "getColumns",
+            "responses": {
+              "200": {
+                "description": "Successful operation",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/ColumnsList"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/{columnName}/histogram": {
+          "get": {
+            "tags": ["Histogram"],
+            "summary": "Get histogram for a specific column",
+            "description": "Returns histogram data for the specified column",
+            "operationId": "getHistogram",
+            "parameters": [
+              {
+                "name": "columnName",
+                "in": "path",
+                "description": "Name of the column to get histogram for",
+                "required": true,
+                "schema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "Successful operation",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Histogram"
+                    }
+                  }
+                }
+              },
+              "404": {
+                "description": "Column not found",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    }
+                  }
+                }
+              },
+              "500": {
+                "description": "Server error",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "$ref": "#/components/schemas/Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        spec: swaggerJson,
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+        layout: "BaseLayout"
+      });
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>
